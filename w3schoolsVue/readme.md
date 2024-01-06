@@ -209,3 +209,120 @@ this.$emit('toggle-Favorite');
 
 then we need to invoke it in the main vue file: **app.vue**.
 
+## Fallthrough Attributes
+
+A component can be called with attributes that are not declared as props, and they will simply fall through to the root element in the component.
+
+> Typical attributes used to fall through are `class`, `style` and `v-on`.
+
+we'll change all code to create a simple todo app with fallthrough attrs.
+
+this is how to many many elements with root level of the component:
+
+```vue
+<!-- TodoItem.vue -->
+<template>
+  <div class="pinkBall"></div>
+  <!-- this one with $attrs 👇 -->
+  <li v-bind="$attrs">{{ itemName }}</li>
+  <div class="pinkBall"></div>
+</template>
+```
+
+so, with one we can easily do prior html work as: `<comp-name class='hi-babe'></comp-name>`
+
+### Scoped Styling
+
+instead of using globally styling as when importing a big css file, we can use the `scope` attribute to invoke limited styles in our tended component!
+
+> as: `<style scoped>`
+
+and that comes because of this issue:
+**CSS written inside the `<style>` tag in any `*.vue` file works globally.**
+
+so to limit the styles of a simple selected element as using `p {}`, to make it exclusive to our component we simply use: `<style scoped>` instead of `<style>` as this in `compOne.vue` with many comps
+
+```vue
+<style scoped>
+  p {
+    background-color: pink;
+    width: 150px;
+  }
+</style>
+```
+
+## Local components vs Global ones
+
+importing components from `main.js` makes them all accessible through `*.vue`, as in this `main.js`
+
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+import CompOne from './components/CompOne.vue'
+import CompTwo from './components/CompTwo.vue'
+const app = createApp(App)
+app.component('comp-one', CompOne)
+app.component('comp-two', CompTwo)
+app.mount('#app')
+```
+
+> we can limit that with doing this:
+
+```vue
+<!-- to include it in a sub *.vue file as express routing  in the <script> element -->
+
+<script>
+// this is the 1-2 file main.js
+import { createApp } from 'vue'
+ 
+import App from './App.vue'
+import CompTwo from './components/CompTwo.vue'
+const app = createApp(App)
+app.component('comp-two', CompTwo)
+app.mount('#app')
+// so, we've removed compOne from here
+</script>
+
+<script>
+// this is the 2-2 file App.vue
+// in a script as this one:
+import CompOne from './components/CompOne.vue';
+export default {
+  components: {
+    'comp-one': CompOne
+  }
+}
+</script>
+```
+
+## Slots
+
+We use **slots** in Vue to send content from the parent into the `<template>` of a child component.
+
+so instead of invoking the bare component name as:
+
+```vue
+<template>
+  <slot-comp />
+</template>
+```
+
+we'll be adding data inside that element as an html el. view:
+
+```vue
+<template>
+  <slot-comp>Hello World!</slot-comp>
+</template>
+```
+
+to get that content and receive it, we need to invoke it through this vue el/tag: `<slot>` inside the component. as this:
+
+```vue
+<!-- SlotComp.vue -->
+<template>
+  <div>  
+    <p>SlotComp.vue</p>
+    <slot></slot>
+  </div>
+</template>
+```
