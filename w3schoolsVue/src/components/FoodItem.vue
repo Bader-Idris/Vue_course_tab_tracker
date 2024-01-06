@@ -1,31 +1,28 @@
 <template>
-  <div v-on:click="countClicks">
-    <h2>{{ name }}</h2>  
-    <p>{{ message }}</p>
-    <p id="red">You have clicked me {{ clicks }} times.</p>
+  <div>
+    <h2>
+      {{ foodName }}
+      <img src="/img_quality.svg" v-show="isFavorite">
+    </h2>
+    <p>{{ foodDesc }}</p>
+    <button @click="toggleFavorite">Favorite</button>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      name: 'Apples',
-      message: 'I like apples',
-      clicks: 0
-    }
-  },
+  props: ['foodName', 'foodDesc', 'isFavorite'],
   methods: {
-    countClicks() {
-      this.clicks++;
+    toggleFavorite() {
+      this.$emit('toggle-favorite', this.foodName);
     }
   }
-}
+};
 </script>
 
 <style>
-  #red {
-    font-weight: bold ;
-    color: rgb(144, 12, 12);
-  }
+img {
+  height: 1.5em;
+  float: right;
+}
 </style>

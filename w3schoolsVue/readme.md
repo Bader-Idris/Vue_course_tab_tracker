@@ -113,3 +113,99 @@ app.component('food-item', FoodItem)//and this one
 // this component is set to the first param in it, so in app.vue we invoke it as <food-item> inside <template> tag
 app.mount('#app')
 ```
+
+## vue props
+
+> With props we can pass data to the components via custom attributes to the component tag.
+
+simply as adding html attributes we can add these props to distinguish elements.
+
+adding to prior `App.vue` file divs as:
+
+```vue
+<food-item food-name="Apples"/>
+<food-item food-name="Rice"/>
+```
+
+then we need to receive data inside the component as
+
+```vue
+<!-- FoodList.vue -->
+<script>
+  export default {
+    props: [// as using data prop
+      'foodName'
+    ]
+  }
+</script>
+```
+
+> because js doesn't understand kebab-case for our vue props we use camelCase, and vue gets that automatically
+
+**vite hint: Files in the public directory are served at the root path.**
+
+we can make a props required argument as in mongo, making its type as object then doing this:
+
+```vue
+<script>
+  export default {
+    // props: ['foodName','foodDesc','isFavorite']
+    props: {
+      foodName: {//🔴 this is the required one 🔴
+        type: String,
+        required: true
+      },
+      foodDesc: String,
+      isFavorite: Boolean
+    }
+  }
+</script>
+```
+
+> if we see warnings, we need to know that app.vue is the parent element for the component!
+
+### we can also set a default value for our props with:
+
+```vue
+<!-- in FoodList.vue > foodDesc key -->
+foodDesc: {
+  type: String,
+  required: false,
+  default: 'This is the default description.'
+}
+```
+
+### validator Fns
+
+under the default we can add this validator to check if true/false.
+
+```js
+// FoodItem.vue:
+validator: function(value) {
+  if ( 20<value.length && value.length<50 ) return true;
+  else return false;
+}
+```
+
+vue scope for components prevent changing props values in nested after creating them in the app.vue `parent El` as declaring values in a function, you can't get those variables out of it.
+
+## $emit() and emit event
+
+to capture variables from children to their parent, we can use the built-in method `$emit()`
+
+> *props* send from parent to children, and *$emit()* does the opposite
+
+why $emit is important: because In a larger project the data might come from a database we have connection to in App.vue, and we want a change happening from the component to make a change in the database, so we need to communicate back to the parent from the child component.
+
+in app.vue, this is what listents to the created $emit() in FoodList component file:
+
+```vue
+<!-- app.vue > line 13 -->
+@toggle-favorite="receiveEmit"
+
+<!-- FoodList.vue line 23 > $emit Fn -->
+this.$emit('toggle-Favorite');
+```
+
+then we need to invoke it in the main vue file: **app.vue**.
+
