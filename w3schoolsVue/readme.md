@@ -326,3 +326,204 @@ to get that content and receive it, we need to invoke it through this vue el/tag
   </div>
 </template>
 ```
+
+## v-slot
+
+we use `v-slot` directive to refer to **named slots**, its job is to distinguish slots to not clone them as when using bare **slots**.
+
+we easily use the name attribute similar to req.body.name for forms:
+
+```vue
+<!-- SlotComp.vue -->
+<h3>Component</h3>
+<div>
+  <slot name="topSlot"></slot>
+</div>
+<div>
+  <slot name="bottomSlot"></slot>
+</div>
+```
+
+to Call tended slot we use its name as: `v-slot:tendedSlot`
+
+```vue
+<!-- in App.vue -->
+<h1>App.vue</h1>
+<p>The component has two div tags with one slot in each.</p>
+<slot-comp v-slot:bottomSlot>'Hello!'</slot-comp>
+<!-- ☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝ -->
+```
+
+we can make the unnamed slots as default ones, view:
+
+```vue
+<!-- in App.vue -->
+<slot-comp v-slot:default>'Default slot'</slot-comp>
+```
+
+Or we can name it with any name and let it plain, so it becomes the default one, but this used approach is cleaner to use from others!
+
+### v-slot in `<template>`
+
+this is an example, which is same as before but with a template element:
+
+> App.vue:
+
+```vue
+<h1>App.vue</h1>
+<p>The component has two div tags with one slot in each.</p>
+<slot-comp>
+  <template v-slot:bottomSlot>
+    <h4>To the bottom slot!</h4>
+    <p>This p tag and the h4 tag above are directed to the bottom slot with the v-slot directive used on the template tag.</p>
+  </template>
+  <p>This goes into the default slot</p>
+</slot-comp>
+```
+
+> SlotComp.vue:
+
+```vue
+<h3>Component</h3>
+<div>
+  <slot></slot>
+</div>
+<div>
+  <slot name="bottomSlot"></slot>
+</div>
+```
+
+> v-slot: === #
+
+the v-slot shortcut is simply `#`, so these both are the same:
+
+```vue
+<slot-comp v-slot:topSlot>'Hello!'</slot-comp>
+<slot-comp #topSlot>'Hello!'</slot-comp>
+```
+
+Remember, to get the named slot, use either of those ☝
+
+### scoped slot
+
+A scoped slot can send data from an array by using `v-for`
+to send data through a scoped slot from an array we use the for in loop to get all indexes as:
+
+```vue
+<!-- SlotComp.vue -->
+<template>
+  <slot
+    v-for="x in foods"
+    :key="x.name"
+    :foodName="x.name"
+    :foodDesc="x.desc"
+    :foodUrl="x.url"
+  ></slot>
+  <!-- those three foodThings are used to get the array data from down below -->
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        foods: [
+          { name: 'Apple', desc: 'Apples are a type of fruit that grow on trees.', url: 'img_apple.svg' },
+          { name: 'Pizza', desc: 'Pizza has a bread base with tomato sauce, cheese, and toppings on top.', url: 'img_pizza.svg' },
+          { name: 'Rice', desc: 'Rice is a type of grain that people like to eat.', url: 'img_rice.svg' },
+          { name: 'Fish', desc: 'Fish is an animal that lives in water.', url: 'img_fish.svg' },
+          { name: 'Cake', desc: 'Cake is something sweet that tastes good but is not considered healthy.', url: 'img_cake.svg' }
+       ]
+      }
+    }
+  }
+</script>
+```
+
+```vue
+<!-- App.vue -->
+<slot-comp v-slot="food">
+  <hr>
+  <h2>{{ food.foodName }}<img :src=food.foodUrl></h2>
+  <p>{{ food.foodDesc }}</p>
+</slot-comp>
+```
+
+#### named scoped slots
+
+To use named scoped slots we need to name the slots inside the component with the 'name' attribute.
+And to receive data from a named slot we need to refer to that name in the parent where we use the component, with the `v-slot` directive, or shorthand `#`. as:
+
+`SlotComp.vue`:
+
+```vue
+<template>
+  <slot
+    name="leftSlot"
+    :text="leftText"
+  ></slot>
+  <slot
+    name="rightSlot"
+    :text="rightText"
+  ></slot>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        leftText: 'This text belongs to the LEFT slot.',
+        rightText: 'This text belongs to the RIGHT slot.'
+      }
+    }
+  }
+</script>
+```
+
+`App.vue`:
+
+```vue
+<slot-comp #leftSlot="leftProps">
+  <div>{{ leftProps.text }}</div>
+</slot-comp>
+<slot-comp #rightSlot="rightProps">
+  <div>{{ rightProps.text }}</div>
+</slot-comp>
+```
+
+Alternatively, we can create the component one time, with two different `"template"` tags, each `"template"` tag referring to a different slot.
+
+`as`:
+
+```vue
+<slot-comp>
+
+  <template #leftSlot="leftProps">
+    <div>{{ leftProps.text }}</div>
+  </template>
+
+  <template #rightSlot="rightProps">
+    <div>{{ rightProps.text }}</div>
+  </template>
+
+</slot-comp>
+```
+
+##### exercise:
+
+```vue
+Local data in a component is sent from a slot with `v-bind`,
+and it can be received in the parent with
+`v-slot`.
+
+CompOne.vue:
+<slot `v-bind`:lclData="data"></slot>
+
+App.vue:
+<comp-one `v-slot`:"dataFromSlot">
+  <h2>{{ dataFromSlot.lclData }}</h2>
+</comp-one>
+```
+
+## Dynamic Components
+
+...
