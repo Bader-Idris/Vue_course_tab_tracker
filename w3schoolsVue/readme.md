@@ -526,4 +526,326 @@ App.vue:
 
 ## Dynamic Components
 
-...
+We can use this with flipping cards, it's gotta be awesome for them! 🔴
+
+**Dynamic Components** can be used to flip through pages within your page, like tabs in your browser, with the use of the 'is' attribute
+
+to represent the active dynamic component we use the element: `<component></component>` and we tie it with a value through the vue attribue: `is` and bind it as:
+
+```vue
+<component :is="activeComp"></component>
+```
+
+this is an example:
+
+```vue
+<!-- App.vue -->
+<template>
+  <h1>Dynamic Components</h1>
+  <p>App.vue switches between which component to show.</p>
+  <button @click="toggleValue = !toggleValue">Switch component</button>
+  <component :is="activeComp"></component>
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+        toggleValue: true
+      }
+    },
+    computed: {
+      activeComp() {
+        if(this.toggleValue) {
+          return 'comp-one'
+        }
+        else {
+          return 'comp-two'
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  #app {
+    width: 350px;
+    margin: 10px;
+  }
+  #app > div {
+    border: solid black 2px;
+    padding: 10px;
+    margin-top: 10px;
+  }
+</style>
+
+
+<!-- CompOne.vue -->
+<template>
+    <div>
+        <h2>One!</h2>
+        <p>This is component one.</p>
+    </div>
+</template>
+
+<script></script>
+
+<style scoped>
+    div {
+        background-color: lightgreen;
+    }
+</style>
+
+
+<!-- CompTwo.vue -->
+<template>
+    <div>
+        <h2>Two!</h2>
+        <p>This is component two.</p>
+    </div>
+</template>
+
+<script></script>
+
+<style scoped>
+    div {
+        background-color: lightpink;
+    }
+</style>
+```
+
+```js
+// main.js
+import { createApp } from 'vue'
+
+import App from './App.vue'
+import CompOne from './components/CompOne.vue'
+import CompTwo from './components/CompTwo.vue'
+
+const app = createApp(App)
+app.component('comp-one', CompOne)
+app.component('comp-two', CompTwo)
+app.mount('#app')
+```
+
+to keep data preserved we use the `<keepAlive></keepAlive>`, check this good exercise for it in w3School [site:](https://www.w3schools.com/vue/showvue.php?filename=demo_dynamicComp3_4)
+
+> 👾🔴 Change the FrontEndMentor's paying page to meet up with this features!!🔴👾
+
+### keep alive element
+
+All components inside the `<KeepAlive>` tag will be kept alive by default.
+
+but we can exclude attributes using this:
+
+```vue
+<KeepAlive include="CompOne">
+    <component :is="activeComp"></component>
+</KeepAlive>
+<!-- or -->
+<KeepAlive exclude="CompOne">
+    <component :is="activeComp"></component>
+</KeepAlive>
+```
+
+But we need to give the components names with the `name` option: as putting it into the return vue method:
+
+```vue
+<!-- in CompOne.vue -->
+<script>
+  export default {
+    //🔴 we added this name obj key🔴
+    name: 'CompOne',
+    data () {
+      return {
+        imgSrc: 'img_question.svg'
+      }
+    }
+  }
+</script>
+```
+
+and in the App.vue template we make it as:
+
+```vue
+  <KeepAlive include="CompOne">
+    <component :is="activeComp"></component>
+  </KeepAlive>
+```
+
+#### adding many conditions of include/exclude
+
+to do as titled we can separate them with commas, view:
+
+```vue
+<!-- App.vue -->
+<template>
+  <h1>Dynamic Components</h1>
+  <button @click="compNbr++">
+    Next component
+  </button>
+  <KeepAlive include="CompOne,CompThree">
+    <component :is="activeComp"></component>
+  </KeepAlive>
+</template>
+```
+
+#### limit how many components to handle in BOM with max
+
+With `<KeepAlive :max="2">`, the browser will only remember 
+the user input of the last two visited components.
+
+```vue
+<!-- App.vue -->
+<template>
+  <h1>Dynamic Components</h1>
+  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-one'"> One</label>
+  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-two'"> Two</label>
+  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-three'"> Three</label>
+  <!-- this :max="2" is what we need-->
+  <KeepAlive :max="2">
+    <component :is="activeComp"></component>
+  </KeepAlive>
+</template>
+```
+
+## Vue Teleport
+
+The Vue `<Teleport>` tag is used to move content to a different place in the DOM structure.
+
+and we need to use the attribute `to=""` to set the importing point
+
+example:
+
+```vue
+<Teleport to="body">
+  <p>Hello!</p>
+</Teleport>
+```
+
+so we use css notation to get the value of `to` attribute as when using `document.querySelector()` in JS
+
+even after sending those elements and append them into tended DOM, their scripts and styles still work well.
+
+## Vue HTTP Requests
+
+they pronounce normal fetching, this is a simple example:
+
+```vue
+<!-- App.vue -->
+<template>
+  <div>
+    <button @click="fetchData">Fetch Data</button>
+    <pre v-if="data">{{ data }}</pre>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      data: null,
+    };
+  },
+  methods: {
+    async fetchData() {
+      const response = await fetch("file.txt");
+      this.data = await response.text();
+    }
+  }
+};
+</script>
+```
+
+file.txt
+
+```txt
+any string Yo
+```
+
+main.js:
+
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+const app = createApp(App)
+app.mount('#app')
+```
+
+and at last they used axios library to simplify it.
+
+## Vue Template Refs
+
+When the `ref` attribute is set on an HTML tag, the resulting DOM element is added to the `$refs` object.
+
+We can use the `ref` attribute and the `$refs` object in Vue as an alternative to methods in plain JavaScript like `getElementById()` or `querySelector()`.
+
+### The 'ref' Attribute and The '$refs' Object
+
+this is an example of it:
+
+```vue
+<template>
+  <h1>Example</h1>
+  <p>Click the button to put "Hello!" as the text in the green p element.</p>
+  <button @click="changeVal">Change Text</button>
+  <p ref="pEl">This is the initial text</p>
+</template>
+
+<script>
+  export default {
+    methods: {
+      changeVal() {
+        // this is the invoking object to replace p.innerHTML above
+        this.$refs.pEl.innerHTML = "Hello!";
+      }
+    }
+  }
+</script>
+```
+
+## Vue Lifecycle Hooks
+
+Every time a component reaches a new stage in its lifecycle, a specific function runs, and we can add code to that function. Such functions are called lifecycle hooks, because we can "hook" our code into that stage.
+
+there are 14 lifecycle hooks in vue, OMG
+
+beforeCreate
+created
+beforeMount
+mounted
+beforeUpdate
+updated
+beforeUnmount
+unmounted
+errorCaptured
+renderTracked
+renderTriggered
+activated
+deactivated
+serverPrefetch
+
+view [at:](https://www.w3schools.com/vue/vue_lifecycle-hooks.php)
+
+this 14 method lifecycle is an enormous topic, [view it here](https://www.w3schools.com/vue/vue_lifecycle-hooks.php)
+
+### beforeCreate hook
+
+this hook happens before the component gets initialized
+
+### created hook
+
+We should avoid trying to access DOM elements from the `created` lifecycle hook, because DOM elements are not accessible until the component is `mounted`.
+
+The `created` lifecycle hook can be used to fetch data with HTTP requests, or set up initial data values. Like in the example below, the data property 'text' is given an initial value
+
+### beforeMount
+
+it happens just before the component is added to the DOM.
+
+we should avoid accessing DOM before the app is mounted, because it will not get it!
+
+> so don't rely on any of mentioned hooks for innerHTMLs
+
+### mounted hook
+

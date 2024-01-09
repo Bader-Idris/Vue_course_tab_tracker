@@ -1,63 +1,45 @@
 <template>
-  <h2>Re-usable Slot Cards</h2>
-  <p>We create card-like div boxes from the foods array.</p>
-  <p>We also create a card-like footer by reusing the same component.</p>
-  <div id="wrapper">
-    <slot-comp v-for="x in foods">
-      <img v-bind:src="x.url">
-      <h4>{{ x.name }}</h4>
-    </slot-comp>
-  </div>
-  <div id="wrapper">
-    <slot-comp>
-      <!-- because it's empty, it uses the fall back from the component in SlotComp.vue -->
-    </slot-comp>
-  </div>
-  <footer>
-    <slot-comp>
-      <h3>Footer</h3>
-    </slot-comp>
-  </footer>
+  <h1>Dynamic Components</h1>
+  <p>With &lt;KeepAlive :max="2"&gt; only the last two visited components will remember the user input.</p>
+  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-one'"> One</label>
+  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-two'"> Two</label>
+  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-three'"> Three</label>
+  <KeepAlive :max="2">
+    <component :is="compName"></component>
+  </KeepAlive>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      foods: [
-        { name: 'Apple', url: 'img_apple.svg' },
-        { name: 'Pizza', url: 'img_pizza.svg' },
-        { name: 'Rice', url: 'img_rice.svg' },
-        { name: 'Fish', url: 'img_fish.svg' },
-        { name: 'Cake', url: 'img_cake.svg' }
-      ]
+      compName: 'comp-one'
     }
   }
 }
 </script>
 
 <style>
-#wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+#app {
+  width: 350px;
+  margin: 10px;
 }
 
-#wrapper>div {
-  background-color: lightgreen;
+#app>div {
+  border: solid black 2px;
+  padding: 10px;
+  margin-top: 10px;
 }
 
-footer>div {
-  background-color: lightpink;
+h2 {
+  text-decoration: underline;
 }
 
-#wrapper img {
-  display: block;
-  margin: 20% auto 0;
-  width: 60%;
+label {
+  display: inline-block;
+  padding: 5px;
 }
 
-h3,
-h4:not(.fall-back) {
-  text-align: center;
+label:hover {
+  cursor: pointer;
 }</style>
