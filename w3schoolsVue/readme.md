@@ -849,3 +849,263 @@ we should avoid accessing DOM before the app is mounted, because it will not get
 
 ### mounted hook
 
+Below is an example that is perhaps more useful: To put the cursor inside the input field after the form component is mounted, so the user can just start typing.
+
+```vue
+<!-- CompOne.vue -->
+<template>
+  <h2>Form Component</h2>
+  <p>When this component is added to the DOM tree, the mounted() function is called, and we put the cursor inside the input element.</p>
+  <form @submit.prevent>
+    <label>
+      <p>
+        Name: <br>
+        <input type="text" ref="inpName">
+      </p>
+    </label>
+    <label>
+      <p>
+        Age: <br>
+        <input type="number">
+      </p>
+    </label>
+    <button>Submit</button>
+  </form>
+  <p>(This form does not work, it is only here to show the mounted lifecycle hook.)</p>
+</template>
+
+<script>
+  export default {
+    mounted() {
+      this.$refs.inpName.focus();
+    }
+  }
+</script>
+```
+
+### beforeUpdate hook
+
+I can use this and `created` and **beforeMount()** bito says, to put the loader when fetching data!
+
+### updated hook
+
+like a function happens each time you use a toggle bottom, if true/false!
+
+make sure not to use what causes infinite loops in while loop as this one:
+
+```js
+updated() {
+  this.text += "hi, ";
+}
+```
+
+### beforeUnmount Hook
+
+It is called just before a component is removed from the DOM.
+
+an example of it:
+
+```vue
+<!-- CompOne.vue -->
+<script>
+export default {
+  beforeUnmount() {
+    alert("beforeUnmount: The text inside the p-tag is: " + this.$refs.pEl.innerHTML);
+  }
+}
+</script>
+```
+
+```vue
+<!-- App.vue -->
+<template>
+  <h1>The 'beforeUnmount' Lifecycle Hook</h1>
+  <p>As we can see in the alert box, the text inside the p-tag is still accessible in the 'beforeUnmount' hook, right before the 'unmount' hook.</p>
+  <button @click="this.activeComp = !this.activeComp">{{ btnText }}</button>
+  <div>
+    <comp-one v-if="activeComp"></comp-one>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      activeComp: true
+    }
+  },
+  computed: {
+    btnText() {
+      if(this.activeComp) {
+        return 'Remove component'
+      }
+      else {
+        return 'Add component'
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+  div { border: dashed black 1px; border-radius: 10px; padding: 20px; margin: 10px; width: 400px; background-color: lightgreen;
+  }
+</style>
+```
+
+the alert happens on clicking and before the html el is removed
+
+### unmounted hook
+
+It is called after a component is removed from the DOM
+
+> This hook can for example be used to remove event listeners or cancelling timers or intervals.
+
+### errorCaptured hook
+
+it is called when an error happens in a child/descendant component.
+
+as using a non existing $refs, view:
+
+```vue
+<!-- app.vue -->
+<script>
+export default {
+  errorCaptured() {
+    alert("An error occurred");
+  }
+}
+</script>
+
+<!-- in CompOne.vue -->
+<template>
+    <h2>Component</h2>
+    <p>This is the component</p>
+    <button @click="generateError">Generate Error</button>
+</template>
+
+<script>
+export default {
+  methods: {
+    generateError() {
+      this.$refs.objEl.innerHTML = "hi";
+    }
+  }
+}
+</script>
+```
+
+### *renderTracked* and *renderTriggered* Lifecycle Hooks
+
+The `renderTracked` hook runs when a render function is set to track, or monitor, a reactive component. The `renderTracked` hook usually runs when a reactive component is initialized.
+
+The `renderTriggered` hook runs when such a tracked reactive component changes, and therefore triggers a new render, so that the screen gets updated with the latest changes.
+
+> A **reactive component** is a component that can change.
+
+> A **render function** is a function compiled by Vue that keeps track of reactive components. When a reactive component changes, the render function is triggered and re-renders the application to the screen.
+
+**The renderTracked and renderTriggered hooks are meant to be used in debugging, and are only available in development mode.**
+
+
+### activated and deactivated Hooks
+
+similar to `mounted` but with `<keepAlive>` element and **cached data!**
+
+so if we have both mounted() and activated, mounted will run once, and then it'll be cached with our activated lifecycle hook, see:
+
+```vue
+<script>
+export default {
+  mounted() {
+    console.log("mounted");
+    const liEl = document.createElement("li");
+    liEl.innerHTML = "mounted";
+    this.$refs.olEl.appendChild(liEl);
+    // this'll run once
+  },
+  activated() {
+    console.log("activated");
+    const liEl = document.createElement("li");
+    liEl.innerHTML = "activated";
+    this.$refs.olEl.appendChild(liEl);
+    // 🔴 then any triggering of same Fn will run this 🔴
+  }
+}
+</script>
+```
+
+### serverPrefetch Hook
+
+The 'serverPrefetch' hook is only called during server-side rendering (SSR).
+
+> Explaining and creating an example for the 'serverPrefetch' hook would require a relatively long introduction and setup, and that is beyond the scope of this tutorial.
+
+## Vue Provide/Inject
+
+`Provide/Inject` is a way to share data as an alternative to passing data using props.
+
+so, provide == export(), inject == require(), but it's used with bigger projects than using `props`.
+
+check the files after I changed their content!
+
+## Vue Routing
+
+**Routing** in Vue is used to navigate the Vue application, and it happens on the client side (in the browser) without full page reload, which results in a faster user experience.
+
+it's similar to dynamic components
+
+> We build SPAs (Single Page Applications) with Vue, which means that our application only contains one *.html file. And that means we cannot direct people to other*.html files to show them different content on our page.
+
+but with vue routing we can fix that issue allowing express to work well with vue, as for url routes
+
+> we need to install vue-router
+
+as: `npm install vue-router@4`
+
+### Update main.js
+
+To use routing we must create a router, and we do that in the main.js file.
+
+```js
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+
+import App from './App.vue'
+import FoodItems from './components/FoodItems.vue'
+import AnimalCollection from './components/AnimalCollection.vue'
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        { path: '/animals', component: AnimalCollection },
+        { path: '/food', component: FoodItems },
+    ]
+});
+
+const app = createApp(App)
+
+app.use(router);
+// app.component('food-items', FoodItems);
+// app.component('animal-collection', AnimalCollection);
+
+app.mount('#app')
+```
+
+To change the content on our page with the new router, we need to remove the dynamic component in the previous example and use the `<router-view>` component instead.
+
+see:
+
+```vue
+<template>
+  <p>Choose what part of this page you want to see:</p>
+  <button @click="activeComp = 'animal-collection'">Animals</button>
+  <button @click="activeComp = 'food-items'">Food</button><br>
+  <div>
+    <router-view></router-view>
+    <!-- <component :is="activeComp"></component> -->
+  </div>
+</template>
+```
+
+We can replace the buttons with the `<router-link>` component because that works better with the router.

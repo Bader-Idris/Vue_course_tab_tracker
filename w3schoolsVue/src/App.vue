@@ -1,45 +1,59 @@
 <template>
-  <h1>Dynamic Components</h1>
-  <p>With &lt;KeepAlive :max="2"&gt; only the last two visited components will remember the user input.</p>
-  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-one'"> One</label>
-  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-two'"> Two</label>
-  <label><input type="radio" name="rbgComp" v-model="compName" :value="'comp-three'"> Three</label>
-  <KeepAlive :max="2">
-    <component :is="compName"></component>
-  </KeepAlive>
+  <h1>Food</h1>
+  <div @click="this.activeComp = 'food-about'" class="divBtn">About</div>
+  <div @click="this.activeComp = 'food-kinds'" class="divBtn">Kinds</div>
+  <div id="divComp">
+    <component :is="activeComp"></component>
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      compName: 'comp-one'
+      activeComp: 'food-kinds',
+      foods: [
+        { name: 'Pizza', imgUrl: 'img_pizza.svg' },
+        { name: 'Apple', imgUrl: 'img_apple.svg' },
+        { name: 'Cake', imgUrl: 'img_cake.svg' },
+        { name: 'Fish', imgUrl: 'img_fish.svg' },
+        { name: 'Rice', imgUrl: 'img_rice.svg' }
+      ]
+    }
+  },
+  provide() {
+    return {
+      foods: this.foods
     }
   }
 }
 </script>
 
-<style>
-#app {
-  width: 350px;
+<style scoped>
+.divBtn {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  background-color: white;
+  border: solid 2px #04AA6D;
+  border-radius: 10px;
+  font-family: Verdana, sans-serif;
+  color: black;
+  padding: 10px;
   margin: 10px;
 }
 
-#app>div {
-  border: solid black 2px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-h2 {
-  text-decoration: underline;
-}
-
-label {
-  display: inline-block;
-  padding: 5px;
-}
-
-label:hover {
+.divBtn:hover {
+  background-color: #04AA6D;
+  color: white;
   cursor: pointer;
-}</style>
+}
+
+#divComp {
+  border: dashed black 1px;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px;
+  width: 400px;
+}
+</style>
