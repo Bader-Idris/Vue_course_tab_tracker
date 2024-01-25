@@ -1109,3 +1109,97 @@ see:
 ```
 
 We can replace the buttons with the `<router-link>` component because that works better with the router.
+
+### Style to The `<router-link>` Component
+
+The `<router-link>` component is rendered to an `<a>` tag. We can see that if we right-click the element in the browser and inspect it:
+
+so we add this styling for the default rendering of router-link:
+
+```vue
+<style scoped>
+a.router-link-active {
+  background-color: rgb(110, 79, 13);
+}
+</style>
+<!-- and it works on active -->
+```
+
+> **form exercises**, good to [view:](https://www.w3schools.com/vue/vue_form-inputs.php)
+
+one of them is this radio input type:
+
+```vue
+<!-- App.vue -->
+<template>
+  <h1>Radio Buttons in Vue</h1>
+  <form @submit.prevent="registerAnswer">
+    <p>What is your favorite animal?</p>
+    <label>
+      <input type="radio" name="favAnimal" v-model="inpVal" value="Cat"> Cat
+    </label>
+    <label>
+      <input type="radio" name="favAnimal" v-model="inpVal" value="Dog"> Dog
+    </label>
+    <label>
+      <input type="radio" name="favAnimal" v-model="inpVal" value="Turtle"> Turtle
+    </label>
+    <label>
+      <input type="radio" name="favAnimal" v-model="inpVal" value="Moose"> Moose
+    </label>
+    <button type="submit">Submit</button>
+  </form>
+  <div>
+    <h3>Submitted choice:</h3>
+    <p id="pAnswer">{{ inpValSubmitted }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      inpVal: '',
+      inpValSubmitted: 'Not submitted yet'
+    }
+  },
+  methods: {
+    registerAnswer() {
+      if(this.inpVal) {
+        this.inpValSubmitted = this.inpVal;
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+  div {
+    border: dashed black 1px;
+    border-radius: 10px;
+    padding: 0 20px 20px 20px;
+    margin-top: 20px;
+    display: inline-block;
+  }
+  button {
+    margin: 10px;
+  }
+  label {
+    display: block;
+    width: 80px;
+    padding: 5px;
+  }
+  label:hover {
+    cursor: pointer;
+    background-color: rgb(211, 244, 211);
+    border-radius: 5px;
+  }
+  #pAnswer {
+    background-color: lightgreen;
+    padding: 5px;
+  }
+</style>
+```
+
+## Vue Animations
+
